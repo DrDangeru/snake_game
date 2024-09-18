@@ -4,7 +4,7 @@ import GamePieces from './Components/GamePieces';
 
 function App() {
   return (
-    <div>
+    <div className='container'>
       <GameState />
     </div>
   );

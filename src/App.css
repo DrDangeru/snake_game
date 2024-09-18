@@ -1,3 +1,24 @@
+.container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.score{
+  color: blueviolet;
+  font-size: 24px;
+}
+
+.highScore{
+  color: red;
+  font-size: 18px;
+}
+
+.gameOver{
+  color: black;
+  font-size: 26px;
+  margin-top: 1.5rem;
+}
+
 .gameCanvas{
   background-color: aliceblue;
   border: solid lightgray;
