@@ -1,12 +1,13 @@
 // import { type } from '@testing-library/user-event/dist/type';
-import React, { useEffect, useState } from 'react'
+import React, { useState, useRef } from 'react'
 import GamePieces from './GamePieces';
+import Modal from './Modal';
 
 function GameState ({onGameOver}){
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(parseInt(localStorage.getItem('highScore') || 0));
   const [gameOver, setGameOver] = useState(false);
-  const [collision, setCollision] = useState('');
+  const gamePiecesRef = useRef(null);
 
   const handleGameOver = (reason) => {
     setGameOver(true);
@@ -16,39 +17,38 @@ function GameState ({onGameOver}){
       setHighScore(score);
     }
     
-    onGameOver(reason); // Pass through to parent
-    setScore(0);
+    onGameOver(reason);
   };
 
-  const handleGameReset = () => {
-    setScore(0);
-    setGameOver(false);
-  }
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (gameOver && e.key === 'Enter') {
-        handleGameReset(); //reset
-      }
+  const handleRestart = () => {
+    if (gamePiecesRef.current && gamePiecesRef.current.resetGame) {
+      gamePiecesRef.current.resetGame();
     }
-    window.addEventListener('keydown', handleKeyPress);
-  }, [gameOver])
-
-  
+    setGameOver(false);
+    setScore(0);
+    setHighScore(parseInt(localStorage.getItem('highScore') || 0));
+  };
 
   return (
-    <div className='game-container'>
-      <GamePieces 
+    <div>
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <h2>Score: {score}</h2>
+        <h3>High Score: {highScore}</h3>
+      </div>
+      <GamePieces
+        ref={gamePiecesRef}
         score={score}
         setScore={setScore}
         onGameOver={handleGameOver}
       />
-      <p className='score'>Score: {score}</p>
-      <p className='highScore'>High Score: {highScore}</p>
-      {gameOver && (
-        <button onClick={handleGameReset}>Play Again</button>
-      )}
+      <Modal
+        isOpen={gameOver}
+        onClose={handleRestart}
+        score={score}
+        highScore={highScore}
+      />
     </div>
-  )
+  );
 }
 
 export default GameState;
