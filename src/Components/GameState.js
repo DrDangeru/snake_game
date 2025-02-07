@@ -1,23 +1,24 @@
 // import { type } from '@testing-library/user-event/dist/type';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import GamePieces from './GamePieces';
 
-const GameState = () => {
-
+function GameState ({onGameOver}){
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(parseInt(localStorage.getItem('highScore') || 0));
   const [gameOver, setGameOver] = useState(false);
   const [collision, setCollision] = useState('');
 
-  const handleGameOver = (type) => {
+  const handleGameOver = (reason) => {
     setGameOver(true);
-
+    
     if (score > highScore) {
-      setHighScore(score);
       localStorage.setItem('highScore', score.toString());
+      setHighScore(score);
     }
-    setCollision(type)
-
-  }
+    
+    onGameOver(reason); // Pass through to parent
+    setScore(0);
+  };
 
   const handleGameReset = () => {
     setScore(0);
@@ -25,37 +26,29 @@ const GameState = () => {
   }
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (gameOver && e.key == 'Enter') {
+      if (gameOver && e.key === 'Enter') {
         handleGameReset(); //reset
       }
     }
     window.addEventListener('keydown', handleKeyPress);
   }, [gameOver])
 
+  
 
   return (
     <div className='game-container'>
-      <p className='score'>Score {score}</p>
-      <p className='highScore'>High Score {highScore}</p>
-      {
-        gameOver && (
-          <div className='gameOver'>
-            <p>Game Over! {collision.type === 'wall' ? 'Hit the wall' :
-              'You ate yourself'} </p>
-            <p >Press Enter to Reset</p>
-          </div>
-        )
-      }{
-        !gameOver && (
-          <GamePieces
-            score={score}
-            setScore={setScore}
-            onGameOver={(type) => handleGameOver(type)} />
-        )
-      }
+      <GamePieces 
+        score={score}
+        setScore={setScore}
+        onGameOver={handleGameOver}
+      />
+      <p className='score'>Score: {score}</p>
+      <p className='highScore'>High Score: {highScore}</p>
+      {gameOver && (
+        <button onClick={handleGameReset}>Play Again</button>
+      )}
     </div>
-
   )
 }
 
-export default GameState
+export default GameState;

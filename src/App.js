@@ -1,11 +1,15 @@
 import './App.css';
-import GameState from './GameState';
-import GamePieces from './Components/GamePieces';
+import GameState from './Components/GameState';
 
 function App() {
   return (
     <div className='container'>
-      <GameState />
+      <GameState 
+        onGameOver={(reason) => { // Add handler here
+          console.log('Game Over Reason:', reason);
+          // Add game reset logic here later
+        }}
+      />
     </div>
   );
 }
